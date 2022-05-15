@@ -16,7 +16,10 @@ def goToDir(dirpath):
                 tempDirAndTime = {tempPath: tempTime}
                 #print(tempDirAndTime)
                 DirAndTime.update(tempDirAndTime)
+            if entry.is_dir():
+                tempPath = os.path.abspath(entry.path)
+                goToDir(tempPath)
 
 
-gotodir(startpath)
+goToDir(startpath)
 print(DirAndTime)
