@@ -8,16 +8,21 @@ import datetime
 startpath = "C:/test"
 #target dir
 dstpath = "C:/dstTest"
-
+#путь для дневных бекапов
 DayDir="C:/Day"
 
 #create dict for all files in source dir
 DirAndTime = dict()
 
+#Время в настоящий момент в юникс
 now = time.time()
+#перевод юникс в нормаль
 dt_now = datetime.datetime.fromtimestamp(now)
+# Юникс время за 1 день
 SingleDay=86400
+# Юникс время за 1 месяц
 SingleMonth=2629743
+# Юникс время за 1 год
 SingleYear=31556926
 
 
@@ -39,26 +44,15 @@ def goToDir(dirpath):
 
 def YearSort():
     for key, value in DirAndTime.items():
-        #dt_c = datetime.datetime.fromtimestamp(value)
-       # if dt_c.month == 12 and dt_c.day == 31:
-        print (value)
-        #if (dt_c.day & dt_c.month & dt_c.year) == (dt_now.day & dt_now.month & dt_now.year) : 
-         #   print (dt_c)
-        #if dt_c.day == 28 :
-         #   print (dt_c)
-        #if
+        dt_c = datetime.datetime.fromtimestamp(value)
+        if dt_c.month == 12 and dt_c.day == 31:
+          print (dt_c)
         
-        #if (value-now)<=SingleDay:
-            
-        
-
-        
-        if (now-value)<=SingleDay:
-            shutil.move(key,DayDir)
-            print(now-value)
-                   
-            
-
+      
+def DaySort():
+    for key, value in DirAndTime.items():
+        if (now-value)<=SingleDay:     # Сравнение разницы времени в реалтайм со временем создания файла с временем на 1 день в юникс формате
+            shutil.move(key,DayDir)  # Перемещение файла в папку дневные отчеты "Day"
 
 
             
@@ -68,8 +62,6 @@ def YearSort():
 
 goToDir(startpath)
 
-
-
-print(now)
-print (dt_now.day)
 YearSort()
+DaySort() # Вызов функции черт ее дери
+
