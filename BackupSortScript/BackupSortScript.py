@@ -1,8 +1,5 @@
 
-import shutil
-import os
-import time
-import datetime
+import shutil,os,time,datetime
 
 #source dir
 startpath = "C:/test"
@@ -12,6 +9,7 @@ dstpath = "C:/dstTest"
 DayDir="C:/Day"
 
 WeekDir="C:/Week"
+MonthDir="C:/Month"
 #create dict for all files in source dir
 DirAndTime = dict()
 
@@ -65,7 +63,13 @@ def WeekSort():
             shutil.move(key,WeekDir)  # Перемещение файла в папку недельные отчеты "Week"
             # Сравнение разницы времени в реалтайм  времени создания файла с временем на 7 Дней в юникс формате
           # Перемещение файла в папку недельные отчеты "Week"
-          
+def MonthSort():
+    for key, value in DirAndTime.items():
+        if  ((now-value) >=2417393.5280878544) & ((now-value) <= 2503552.6705605984) :
+            print("Yes")
+            #shutil.move(key,MonthDir)  # Перемещение файла в папку недельные отчеты "Month"
+            # Сравнение разницы времени в реалтайм  времени создания файла с временем на 28 Дней в юникс формате
+          # Перемещение файла в папку недельные отчеты "Month" 2503552.6705605984    2417393.5280878544  вплоть до 23:59 с 00:00
          
 
 
@@ -74,6 +78,7 @@ goToDir(startpath)
 YearSort()
 DaySort() # Вызов функции 
 WeekSort()
+MonthSort()
 
 # Пофиксить баг в случае, когда дневной файл он же недельный, в случае переноса, а не копирования , перенесется только один
-#
+# тоже самое с днями и месяцами
