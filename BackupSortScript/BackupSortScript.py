@@ -11,11 +11,14 @@ dstpath = "C:/dstTest"
 #путь для дневных бекапов
 DayDir="C:/Day"
 
+WeekDir="C:/Week"
 #create dict for all files in source dir
 DirAndTime = dict()
 
 #Время в настоящий момент в юникс
 now = time.time()
+temp2=round(now)
+
 #перевод юникс в нормаль
 dt_now = datetime.datetime.fromtimestamp(now)
 # Юникс время за 1 день
@@ -24,6 +27,8 @@ SingleDay=86400
 SingleMonth=2629743
 # Юникс время за 1 год
 SingleYear=31556926
+
+SingleWeek=604800
 
 
 #collect data about files in dictionary
@@ -55,13 +60,22 @@ def DaySort():
             shutil.move(key,DayDir)  # Перемещение файла в папку дневные отчеты "Day"
 
 
+def WeekSort():
+    for key, value in DirAndTime.items():
+        temp1=round(value)
+        print(temp2-temp1)
+        if  ((now-value) >=580775) & ((now-value) <= 753695) : 
+            shutil.move(key,WeekDir)  # Перемещение файла в папку недельные отчеты "Week"
+            # Сравнение разницы времени в реалтайм со временем создания файла с временем на 7 Дней в юникс формате
             
-
-
+          # Перемещение файла в папку недельные отчеты "Week"
+          
+         
 
 
 goToDir(startpath)
 
 YearSort()
-DaySort() # Вызов функции черт ее дери
+DaySort() # Вызов функции 
+WeekSort()
 
