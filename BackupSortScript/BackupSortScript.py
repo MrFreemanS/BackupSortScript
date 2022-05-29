@@ -20,6 +20,9 @@ YearDir="C:/test/Year"
 #create dict for all files in source dir
 DirAndTime = dict()
 
+#dict for remove files that were not selected
+markedForRemoval = dict()
+
 #now time in UNIX timestamp
 now = time.time()
 
@@ -27,8 +30,10 @@ now = time.time()
 SingleDay=86400
 
 #collect data about files in dictionary
-def goToDir(dirpath):
-
+def ScanAllDirs(dirpath):
+    if not os.path.exists(dirpath):
+        print("DST DIR NOT EXISTS")
+        exit()
     #go around files and dirs
     with os.scandir(dirpath) as listOfEntries:  
         #key for dict is abs path like a D:/test
@@ -41,29 +46,42 @@ def goToDir(dirpath):
                 DirAndTime.update(tempDirAndTime)
             if entry.is_dir():
                 tempPath = os.path.abspath(entry.path)
-                goToDir(tempPath)
+                ScanAllDirs(tempPath) #RECURSION!
  
+#Analog ScanAllDirs but without RECURSION
+#for remove files
+def ScanSRCDir(dirpath):
+    if not os.path.exists(dirpath):
+        print("DST DIR NOT EXISTS")
+        exit()
+    #go around files and dirs
+    with os.scandir(dirpath) as listOfEntries:  
+        #key for dict is abs path like a D:/test
+        #value is file creation time in UNIX timestamp
+        for entry in listOfEntries:
+            if entry.is_file():
+                tempPath = os.path.abspath(entry.path)
+                tempTime = os.path.getctime(tempPath)
+                tempDirAndTime = {tempPath: tempTime}
+                markedForRemoval.update(tempDirAndTime)
 
 def YearSort():
     for key, value in DirAndTime.items():
         dt_c = datetime.datetime.fromtimestamp(value)
         if dt_c.month == 12 and dt_c.day == 31:
-              shutil.move(key,YearDir)
-              #DirAndTime.pop(key)
+            MovingFiles(key,YearDir)
 
 
 def DaySort():
     for key, value in DirAndTime.items():
-        if (now-value)<=SingleDay:     
-                shutil.move(key,DayDir)
-                #dict.pop(key)
+        if (now-value)<=SingleDay:   
+            MovingFiles(key,DayDir)
 
 
 def WeekSort():
     for key, value in DirAndTime.items():
         if  ((now-value) >=580775) & ((now-value) <= 753695) : 
-            shutil.move(key,WeekDir)
-            #dict.pop(key)
+            MovingFiles(key,WeekDir)
 
 def MonthSort():
     #convert UNIX time stamp to datatime
@@ -71,35 +89,42 @@ def MonthSort():
 
     for key, value in DirAndTime.items():
         dt_c = datetime.datetime.fromtimestamp(value)
+        #if selected file date is 25th day of this month and this year
         if dt_c.day == 25 and dt_c.year == dt_now.year:
-            if os.path.exists(MonthDir):
-                shutil.move(key,MonthDir)
-                #dict.pop(key)
-            else:
-                os.mkdir(MonthDir)
-                shutil.move(key,MonthDir)
-               # dict.pop(key)
+            MovingFiles(key,MonthDir)
+
+def DeleteSRCDir():
+    #scan start path and delete them all
+    ScanSRCDir(startpath)
+    for key, value in markedForRemoval.items():
+        os.remove(key)
 
 
+def MovingFiles(key,dstdir):
+    pathName = os.path.basename(key)
+    try:
+        shutil.move(key,dstdir)
+    except:
+        return
 
-goToDir(startpath)
 
+ScanAllDirs(startpath)
 
 if not os.path.exists(YearDir):
     os.mkdir(YearDir)
 
-YearSort()
-
 if not os.path.exists(DayDir):
     os.mkdir(DayDir)
 
-DaySort()
-
 if not os.path.exists(WeekDir):
     os.mkdir(WeekDir)
-WeekSort()
 
 if not os.path.exists(MonthDir):
     os.mkdir(MonthDir)
 
+DaySort()
+WeekSort()
 MonthSort()
+YearSort()
+
+DeleteSRCDir()
