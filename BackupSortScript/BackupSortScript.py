@@ -11,11 +11,11 @@ import shutil,os,time,datetime
 
 
 #dirsfortest
-startpath = "C:/test"
-DayDir="C:/test/Day"
-WeekDir="C:/test/Week"
-MonthDir="C:/test/Month"
-YearDir="C:/test/Year"
+startpath = "E:/Backups/"
+DayDir="E:/Backups/Day"
+WeekDir="E:/Backups/Week"
+MonthDir="E:/Backups/Month"
+YearDir="E:/Backups/Year"
 
 #create dict for all files in source dir
 DirAndTime = dict()
@@ -41,7 +41,7 @@ def ScanAllDirs(dirpath):
         for entry in listOfEntries:
             if entry.is_file():
                 tempPath = os.path.abspath(entry.path)
-                tempTime = os.path.getctime(tempPath)
+                tempTime = os.path.getmtime(tempPath)
                 tempDirAndTime = {tempPath: tempTime}
                 DirAndTime.update(tempDirAndTime)
             if entry.is_dir():
@@ -61,7 +61,7 @@ def ScanSRCDir(dirpath):
         for entry in listOfEntries:
             if entry.is_file():
                 tempPath = os.path.abspath(entry.path)
-                tempTime = os.path.getctime(tempPath)
+                tempTime = os.path.getmtime(tempPath)
                 tempDirAndTime = {tempPath: tempTime}
                 markedForRemoval.update(tempDirAndTime)
 
@@ -71,16 +71,14 @@ def YearSort():
         if dt_c.month == 12 and dt_c.day == 31:
             MovingFiles(key,YearDir)
 
-
 def DaySort():
     for key, value in DirAndTime.items():
         if (now-value)<=SingleDay:   
             MovingFiles(key,DayDir)
 
-
 def WeekSort():
     for key, value in DirAndTime.items():
-        if  ((now-value) >=580775) & ((now-value) <= 753695) : 
+        if  ((now-value) >=86400) & ((now-value) <= 604800) : 
             MovingFiles(key,WeekDir)
 
 def MonthSort():
@@ -104,6 +102,7 @@ def MovingFiles(key,dstdir):
     pathName = os.path.basename(key)
     try:
         shutil.move(key,dstdir)
+        print (key + " to " + dstdir)
     except:
         return
 
@@ -122,9 +121,14 @@ if not os.path.exists(WeekDir):
 if not os.path.exists(MonthDir):
     os.mkdir(MonthDir)
 
-DaySort()
+
 WeekSort()
-MonthSort()
+DaySort()
+
+
+ScanAllDirs(startpath)
+
 YearSort()
+MonthSort()
 
 DeleteSRCDir()
